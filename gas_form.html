@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAS | フォーム回答自動仕分け</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+JP:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f9f7;--bg2:#eef3ee;--card:#fff;--accent:#2d7a4f;--accent2:#3da06a;--accent-light:#e8f5ee;--border:rgba(45,122,79,0.15);--border-light:#e5e7eb;--text:#111827;--text-mid:#374151;--text-muted:#6b7280;--code-bg:#0f1b12;--code-text:#a8d5b5}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:300;color:var(--text);background:var(--bg);line-height:1.7}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 6vw;background:rgba(247,249,247,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-light)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--accent);text-decoration:none}
+.back-btn{font-size:0.8rem;color:var(--text-muted);text-decoration:none}
+.hero{padding:120px 6vw 60px;max-width:900px;margin:0 auto}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);border:1px solid var(--border);padding:5px 14px;border-radius:999px;margin-bottom:1.5rem}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.hero-desc{font-size:0.95rem;color:var(--text-muted);max-width:600px;line-height:1.9;margin-bottom:2rem}
+.meta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:3rem}
+.meta-badge{font-size:0.72rem;font-weight:500;padding:5px 14px;border-radius:6px;background:var(--accent-light);border:1px solid var(--border);color:var(--accent)}
+.section{max-width:900px;margin:0 auto;padding:0 6vw 60px}
+.section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:1.2rem;color:var(--text);display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:4px;height:1.2em;background:var(--accent);border-radius:2px;flex-shrink:0}
+.flow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.flow-step{background:var(--card);border:1px solid var(--border-light);border-radius:12px;padding:1.2rem;text-align:center;position:relative}
+.flow-step::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--accent);font-weight:700;font-size:1rem;z-index:1}
+.flow-step:last-child::after{display:none}
+.flow-icon{font-size:1.8rem;margin-bottom:0.5rem}
+.flow-label{font-size:0.8rem;font-weight:500;color:var(--text-mid)}
+.flow-sub{font-size:0.72rem;color:var(--text-muted);margin-top:3px}
+.code-block{background:var(--code-bg);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-lang{font-size:0.72rem;letter-spacing:0.1em;color:#6ee7b7;font-family:'JetBrains Mono',monospace}
+.code-file{font-size:0.72rem;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace}
+pre{padding:24px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.8;color:var(--code-text)}
+.kw{color:#86efac}.fn{color:#6ee7b7}.str{color:#fcd34d}.cm{color:#4b6c55}.num{color:#93c5fd}
+.point-list{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem}
+.point-item{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;background:var(--card);border:1px solid var(--border-light);border-radius:10px}
+.point-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.point-text{font-size:0.88rem;color:var(--text-mid);line-height:1.7}
+.point-text strong{color:var(--text);font-weight:500}
+footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border-light);color:var(--text-muted);font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">← Portfolio</a>
+  <span class="back-btn">GAS | フォーム回答自動仕分け</span>
+</nav>
+<div class="hero">
+  <div class="hero-tag">Google Apps Script</div>
+  <h1 class="hero-title">Googleフォーム回答を<br>カテゴリ別シートに自動仕分け</h1>
+  <p class="hero-desc">Googleフォームの回答を、選択肢の内容によって別々のシートへ自動振り分けするGASスクリプトです。手作業のコピペ作業を完全になくします。</p>
+  <div class="meta-row">
+    <span class="meta-badge">Google Apps Script</span>
+    <span class="meta-badge">Google Forms</span>
+    <span class="meta-badge">Spreadsheet API</span>
+    <span class="meta-badge">フォーム送信トリガー</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">処理の流れ</div>
+  <div class="flow-grid">
+    <div class="flow-step"><div class="flow-icon">📋</div><div class="flow-label">フォーム送信</div><div class="flow-sub">ユーザーが回答</div></div>
+    <div class="flow-step"><div class="flow-icon">⚡</div><div class="flow-label">トリガー発火</div><div class="flow-sub">onFormSubmit</div></div>
+    <div class="flow-step"><div class="flow-icon">🔍</div><div class="flow-label">カテゴリ判定</div><div class="flow-sub">回答内容を分析</div></div>
+    <div class="flow-step"><div class="flow-icon">📂</div><div class="flow-label">シートへ転記</div><div class="flow-sub">該当シートに追記</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">スクリプト（GAS）</div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Google Apps Script</span><span class="code-file">sort_form.gs</span></div>
+    <pre><span class="cm">// フォーム送信時にカテゴリ別シートへ自動仕分け</span>
+<span class="kw">function</span> <span class="fn">onFormSubmit</span>(e) {
+  <span class="kw">const</span> ss       = <span class="fn">SpreadsheetApp</span>.getActiveSpreadsheet();
+  <span class="kw">const</span> response = e.namedValues;
+
+  <span class="cm">// フォームの回答を取得（列名でアクセス）</span>
+  <span class="kw">const</span> name     = response[<span class="str">'お名前'</span>][<span class="num">0</span>];
+  <span class="kw">const</span> email    = response[<span class="str">'メールアドレス'</span>][<span class="num">0</span>];
+  <span class="kw">const</span> category = response[<span class="str">'お問い合わせ種別'</span>][<span class="num">0</span>];
+  <span class="kw">const</span> message  = response[<span class="str">'内容'</span>][<span class="num">0</span>];
+  <span class="kw">const</span> datetime = <span class="kw">new</span> <span class="fn">Date</span>().toLocaleString(<span class="str">'ja-JP'</span>);
+
+  <span class="cm">// カテゴリに対応するシート名を定義</span>
+  <span class="kw">const</span> sheetMap = {
+    <span class="str">'サービスについて'</span>  : <span class="str">'service'</span>,
+    <span class="str">'料金について'</span>      : <span class="str">'pricing'</span>,
+    <span class="str">'採用について'</span>      : <span class="str">'recruit'</span>,
+    <span class="str">'その他'</span>            : <span class="str">'other'</span>
+  };
+
+  <span class="cm">// 対応シートを取得（なければ作成）</span>
+  <span class="kw">const</span> sheetName = sheetMap[category] || <span class="str">'other'</span>;
+  <span class="kw">let</span>   sheet     = ss.getSheetByName(sheetName);
+  <span class="kw">if</span> (!sheet) sheet = ss.insertSheet(sheetName);
+
+  <span class="cm">// データを末尾に追記</span>
+  sheet.appendRow([datetime, name, email, category, message]);
+  <span class="fn">Logger</span>.log(<span class="str">`仕分け完了: ${category} → ${sheetName}`</span>);
+}</pre>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">ポイント解説</div>
+  <div class="point-list">
+    <div class="point-item"><div class="point-icon">📂</div><div class="point-text"><strong>シートが存在しない場合は自動作成</strong>　新しいカテゴリが追加されても、対応するシートを自動生成するため、メンテナンス不要です。</div></div>
+    <div class="point-item"><div class="point-icon">🗂️</div><div class="point-text"><strong>namedValues で列名アクセス</strong>　列番号ではなくフォームの質問名でデータを取得するため、フォームの列順が変わっても壊れません。</div></div>
+    <div class="point-item"><div class="point-icon">⚡</div><div class="point-text"><strong>フォーム送信トリガーで即時実行</strong>　送信と同時にスクリプトが走るため、リアルタイムに仕分けが完了します。</div></div>
+  </div>
+</div>
+<footer>© 2025 Portfolio</footer>
+</body></html>
