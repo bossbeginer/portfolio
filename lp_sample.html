@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskFlow | チームの仕事を、もっとスムーズに。</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --white: #ffffff;
+  --bg: #f7f8fa;
+  --bg2: #eef1f6;
+  --text: #111827;
+  --text-mid: #374151;
+  --text-muted: #6b7280;
+  --accent: #2563eb;
+  --accent2: #3b82f6;
+  --accent-light: #eff6ff;
+  --border: rgba(37,99,235,0.15);
+  --border-light: #e5e7eb;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  color: var(--text);
+  background: var(--white);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 6vw;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-light);
+}
+.logo {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 1.3rem; color: var(--accent); text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.nav-cta {
+  background: var(--accent); color: #fff;
+  font-size: 0.8rem; font-weight: 500;
+  padding: 8px 20px; border-radius: 6px;
+  text-decoration: none; transition: background 0.2s;
+}
+.nav-cta:hover { background: var(--accent2); }
+
+/* HERO */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px 6vw 80px;
+  background: linear-gradient(180deg, #f0f4ff 0%, #fff 100%);
+}
+.hero-inner { max-width: 700px; }
+
+.hero-eyebrow {
+  display: inline-block;
+  font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-light);
+  border: 1px solid var(--border);
+  padding: 5px 16px; border-radius: 999px;
+  margin-bottom: 1.8rem;
+  animation: fadeUp 0.6s ease both;
+}
+.hero-title {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1.1; letter-spacing: -0.03em;
+  margin-bottom: 1.4rem;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.hero-title span { color: var(--accent); }
+.hero-desc {
+  font-size: 1rem; color: var(--text-muted);
+  max-width: 500px; margin: 0 auto 2.4rem;
+  line-height: 1.9;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+.hero-btns {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.btn-primary {
+  background: var(--accent); color: #fff;
+  font-weight: 500; font-size: 0.9rem;
+  padding: 14px 32px; border-radius: 8px;
+  text-decoration: none; transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,0.25); }
+.btn-secondary {
+  background: transparent; color: var(--text-mid);
+  font-weight: 500; font-size: 0.9rem;
+  padding: 14px 32px; border-radius: 8px; border: 1px solid var(--border-light);
+  text-decoration: none; transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.hero-note {
+  margin-top: 1.2rem;
+  font-size: 0.75rem; color: var(--text-muted);
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+
+/* LOGOS */
+#logos {
+  padding: 3rem 6vw;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  background: var(--white);
+}
+.logos-inner {
+  max-width: 800px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  gap: 3rem; flex-wrap: wrap;
+}
+.logos-label {
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-muted); white-space: nowrap;
+}
+.logo-item {
+  font-family: 'Syne', sans-serif; font-weight: 700;
+  font-size: 1rem; color: #d1d5db; letter-spacing: -0.01em;
+}
+
+/* FEATURES */
+#features { background: var(--bg); padding: 100px 6vw; }
+.section-inner { max-width: 1000px; margin: 0 auto; }
+.section-eyebrow {
+  font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 0.5rem;
+}
+.section-title {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1.2; margin-bottom: 1rem;
+}
+.section-desc {
+  color: var(--text-muted); font-size: 0.95rem;
+  max-width: 500px; margin-bottom: 3.5rem; line-height: 1.9;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+.feature-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 14px; padding: 2rem;
+  transition: all 0.25s;
+}
+.feature-card:hover {
+  border-color: var(--border);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(37,99,235,0.07);
+}
+.feature-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: var(--accent-light); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; margin-bottom: 1.2rem;
+}
+.feature-title {
+  font-weight: 500; font-size: 1rem;
+  margin-bottom: 0.5rem; color: var(--text);
+}
+.feature-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.8; }
+
+/* NUMBERS */
+#numbers { background: var(--white); padding: 80px 6vw; }
+.numbers-grid {
+  max-width: 800px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 2rem; text-align: center;
+}
+.number-val {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 2.8rem; color: var(--accent);
+  letter-spacing: -0.03em; line-height: 1;
+  margin-bottom: 0.4rem;
+}
+.number-label { font-size: 0.82rem; color: var(--text-muted); }
+
+/* STEPS */
+#steps { background: var(--bg); padding: 100px 6vw; }
+.steps-list {
+  display: flex; flex-direction: column; gap: 1.5rem;
+  max-width: 640px;
+}
+.step-item {
+  display: flex; gap: 1.5rem; align-items: flex-start;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 12px; padding: 1.4rem 1.6rem;
+  transition: border-color 0.2s;
+}
+.step-item:hover { border-color: var(--border); }
+.step-num {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 1.4rem; color: var(--accent);
+  min-width: 32px; line-height: 1.2;
+}
+.step-title { font-weight: 500; font-size: 0.95rem; margin-bottom: 4px; }
+.step-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; }
+
+/* TESTIMONIALS */
+#testimonials { background: var(--white); padding: 100px 6vw; }
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+.testimonial-card {
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: 14px; padding: 1.8rem;
+}
+.testimonial-stars { color: #f59e0b; font-size: 0.9rem; margin-bottom: 1rem; }
+.testimonial-text {
+  font-size: 0.88rem; color: var(--text-mid);
+  line-height: 1.85; margin-bottom: 1.2rem;
+}
+.testimonial-author {
+  display: flex; align-items: center; gap: 10px;
+}
+.author-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent-light); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 500; color: var(--accent);
+}
+.author-name { font-size: 0.82rem; font-weight: 500; }
+.author-role { font-size: 0.72rem; color: var(--text-muted); }
+
+/* CTA */
+#cta {
+  background: var(--accent);
+  padding: 100px 6vw; text-align: center;
+}
+#cta h2 {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: #fff; margin-bottom: 1rem; line-height: 1.2;
+}
+#cta p { color: rgba(255,255,255,0.75); font-size: 0.95rem; margin-bottom: 2.5rem; }
+.btn-white {
+  background: #fff; color: var(--accent);
+  font-weight: 700; font-size: 0.9rem;
+  padding: 14px 36px; border-radius: 8px;
+  text-decoration: none; transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+.cta-note { margin-top: 1rem; font-size: 0.75rem; color: rgba(255,255,255,0.6); }
+
+/* FOOTER */
+footer {
+  background: var(--text); color: rgba(255,255,255,0.5);
+  padding: 2.5rem 6vw; text-align: center;
+  font-size: 0.75rem; letter-spacing: 0.06em;
+}
+
+/* DIVIDER */
+hr { border: none; height: 1px; background: var(--border-light); }
+
+/* ANIMATION */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+@media (max-width: 640px) {
+  .hero-btns { flex-direction: column; align-items: center; }
+  .logos-inner { gap: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="#">TaskFlow</a>
+  <a class="nav-cta" href="#cta">無料で始める</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <span class="hero-eyebrow">新登場 · タスク管理ツール</span>
+    <h1 class="hero-title">チームの仕事を、<br><span>もっとスムーズに。</span></h1>
+    <p class="hero-desc">TaskFlowは、チームのタスク・進捗・コミュニケーションを一元管理するシンプルなツールです。導入5分で、明日から使えます。</p>
+    <div class="hero-btns">
+      <a href="#cta" class="btn-primary">
+        無料で試してみる
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+      <a href="#features" class="btn-secondary">機能を見る</a>
+    </div>
+    <p class="hero-note">クレジットカード不要 · 14日間無料トライアル</p>
+  </div>
+</section>
+
+<!-- LOGOS -->
+<div id="logos">
+  <div class="logos-inner">
+    <span class="logos-label">導入実績</span>
+    <span class="logo-item">Acme Corp</span>
+    <span class="logo-item">Horizon</span>
+    <span class="logo-item">Nova Inc</span>
+    <span class="logo-item">Stackify</span>
+    <span class="logo-item">Bluewave</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-inner">
+    <p class="section-eyebrow reveal">Features</p>
+    <h2 class="section-title reveal">必要な機能が、<br>すべて揃っています。</h2>
+    <p class="section-desc reveal">複数のツールを使い分ける必要はもうありません。TaskFlow一つで完結します。</p>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">📋</div>
+        <div class="feature-title">タスク管理</div>
+        <p class="feature-desc">カンバンボードやリスト表示で、タスクの進捗を直感的に把握できます。担当者・期日・優先度を一括管理。</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">チャット連携</div>
+        <p class="feature-desc">タスクごとにコメントを残せるので、メールのやり取りが不要に。会話の文脈がそのまま記録されます。</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">レポート自動生成</div>
+        <p class="feature-desc">週次・月次の進捗レポートを自動作成。経営層への報告もワンクリックで対応できます。</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔔</div>
+        <div class="feature-title">スマート通知</div>
+        <p class="feature-desc">締め切り前・担当変更時に自動で通知。大切なタスクを見落とすことがなくなります。</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔗</div>
+        <div class="feature-title">外部ツール連携</div>
+        <p class="feature-desc">Slack・Google カレンダー・Notionとシームレスに連携。既存ワークフローをそのまま活かせます。</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">セキュリティ</div>
+        <p class="feature-desc">SOC2 Type II準拠。データは常に暗号化され、権限管理も細かく設定できます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- NUMBERS -->
+<section id="numbers">
+  <div class="numbers-grid">
+    <div class="reveal">
+      <div class="number-val">12,000<span style="font-size:1.8rem;">+</span></div>
+      <div class="number-label">導入チーム数</div>
+    </div>
+    <div class="reveal">
+      <div class="number-val">98<span style="font-size:1.8rem;">%</span></div>
+      <div class="number-label">継続率</div>
+    </div>
+    <div class="reveal">
+      <div class="number-val">4.9<span style="font-size:1.8rem;">/5</span></div>
+      <div class="number-label">平均評価</div>
+    </div>
+    <div class="reveal">
+      <div class="number-val">5<span style="font-size:1.8rem;">分</span></div>
+      <div class="number-label">平均導入時間</div>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- STEPS -->
+<section id="steps">
+  <div class="section-inner">
+    <p class="section-eyebrow reveal">How it works</p>
+    <h2 class="section-title reveal">3ステップで<br>すぐに使えます。</h2>
+    <p class="section-desc reveal">面倒な設定は不要。アカウント登録からチーム運用開始まで、最短5分です。</p>
+    <div class="steps-list">
+      <div class="step-item reveal">
+        <div class="step-num">01</div>
+        <div>
+          <div class="step-title">アカウントを作成する</div>
+          <p class="step-desc">メールアドレスだけで登録完了。クレジットカードは不要です。</p>
+        </div>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">02</div>
+        <div>
+          <div class="step-title">チームメンバーを招待する</div>
+          <p class="step-desc">メールアドレスを入力するだけで招待完了。権限設定もかんたんです。</p>
+        </div>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">03</div>
+        <div>
+          <div class="step-title">タスクを登録して運用開始</div>
+          <p class="step-desc">テンプレートを使えば初日からすぐに運用できます。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="section-inner">
+    <p class="section-eyebrow reveal">Testimonials</p>
+    <h2 class="section-title reveal">利用者の声</h2>
+    <p class="section-desc reveal">さまざまな規模・業種のチームに活用いただいています。</p>
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">「導入前は毎週の進捗確認に1時間かかっていましたが、TaskFlowに変えてから15分で終わるようになりました。」</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">TK</div>
+          <div>
+            <div class="author-name">田中 健太</div>
+            <div class="author-role">プロジェクトマネージャー・IT企業</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">「UIがシンプルで、ITに不慣れなメンバーもすぐ使いこなせました。チーム全員が同じ画面を見ながら話せるのが良い。」</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">MS</div>
+          <div>
+            <div class="author-name">村上 沙織</div>
+            <div class="author-role">チームリーダー・広告代理店</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">「Slackとの連携が便利で、タスクの更新が即座に通知されます。抜け漏れが激減しました。」</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">YH</div>
+          <div>
+            <div class="author-name">吉田 裕介</div>
+            <div class="author-role">エンジニアリングマネージャー</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <h2>今すぐ無料で<br>試してみませんか？</h2>
+  <p>14日間の無料トライアル。クレジットカード不要で、いつでもキャンセルできます。</p>
+  <a href="#" class="btn-white">
+    無料トライアルを始める
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+  </a>
+  <p class="cta-note">※ 登録後すぐにすべての機能が使えます</p>
+</section>
+
+<footer>
+  <p>© 2025 TaskFlow, Inc. All rights reserved.</p>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 60);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
