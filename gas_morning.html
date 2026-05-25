@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAS | 毎朝タスクメール自動送信</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+JP:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f9f7;--card:#fff;--accent:#2d7a4f;--accent-light:#e8f5ee;--border:rgba(45,122,79,0.15);--border-light:#e5e7eb;--text:#111827;--text-mid:#374151;--text-muted:#6b7280;--code-bg:#0f1b12;--code-text:#a8d5b5}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:300;color:var(--text);background:var(--bg);line-height:1.7}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 6vw;background:rgba(247,249,247,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-light)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--accent);text-decoration:none}
+.back-btn{font-size:0.8rem;color:var(--text-muted)}
+.hero{padding:120px 6vw 60px;max-width:900px;margin:0 auto}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);border:1px solid var(--border);padding:5px 14px;border-radius:999px;margin-bottom:1.5rem}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.hero-desc{font-size:0.95rem;color:var(--text-muted);max-width:600px;line-height:1.9;margin-bottom:2rem}
+.meta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:3rem}
+.meta-badge{font-size:0.72rem;font-weight:500;padding:5px 14px;border-radius:6px;background:var(--accent-light);border:1px solid var(--border);color:var(--accent)}
+.section{max-width:900px;margin:0 auto;padding:0 6vw 60px}
+.section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:1.2rem;color:var(--text);display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:4px;height:1.2em;background:var(--accent);border-radius:2px;flex-shrink:0}
+.flow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.flow-step{background:var(--card);border:1px solid var(--border-light);border-radius:12px;padding:1.2rem;text-align:center;position:relative}
+.flow-step::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--accent);font-weight:700;font-size:1rem;z-index:1}
+.flow-step:last-child::after{display:none}
+.flow-icon{font-size:1.8rem;margin-bottom:0.5rem}
+.flow-label{font-size:0.8rem;font-weight:500;color:var(--text-mid)}
+.flow-sub{font-size:0.72rem;color:var(--text-muted);margin-top:3px}
+.code-block{background:var(--code-bg);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-lang{font-size:0.72rem;letter-spacing:0.1em;color:#6ee7b7;font-family:'JetBrains Mono',monospace}
+.code-file{font-size:0.72rem;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace}
+pre{padding:24px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.8;color:var(--code-text)}
+.kw{color:#86efac}.fn{color:#6ee7b7}.str{color:#fcd34d}.cm{color:#4b6c55}.num{color:#93c5fd}
+.point-list{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem}
+.point-item{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;background:var(--card);border:1px solid var(--border-light);border-radius:10px}
+.point-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.point-text{font-size:0.88rem;color:var(--text-mid);line-height:1.7}
+.point-text strong{color:var(--text);font-weight:500}
+footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border-light);color:var(--text-muted);font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">← Portfolio</a>
+  <span class="back-btn">GAS | 毎朝タスクメール</span>
+</nav>
+<div class="hero">
+  <div class="hero-tag">Google Apps Script</div>
+  <h1 class="hero-title">毎朝9時にその日のタスクを<br>メールで自動送信</h1>
+  <p class="hero-desc">スプレッドシートに登録されたタスクのうち、当日が期限のものを自動で抽出し、毎朝9時にメールで通知するGASスクリプトです。</p>
+  <div class="meta-row">
+    <span class="meta-badge">Google Apps Script</span>
+    <span class="meta-badge">時間ベーストリガー</span>
+    <span class="meta-badge">Gmail API</span>
+    <span class="meta-badge">日付フィルタリング</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">処理の流れ</div>
+  <div class="flow-grid">
+    <div class="flow-step"><div class="flow-icon">⏰</div><div class="flow-label">毎朝9時</div><div class="flow-sub">時間トリガー発火</div></div>
+    <div class="flow-step"><div class="flow-icon">📊</div><div class="flow-label">タスク取得</div><div class="flow-sub">シートから全件読込</div></div>
+    <div class="flow-step"><div class="flow-icon">🔍</div><div class="flow-label">当日分を抽出</div><div class="flow-sub">日付フィルタリング</div></div>
+    <div class="flow-step"><div class="flow-icon">📧</div><div class="flow-label">メール送信</div><div class="flow-sub">一覧をメールで通知</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">スクリプト（GAS）</div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Google Apps Script</span><span class="code-file">morning_task.gs</span></div>
+    <pre><span class="cm">// 毎朝9時に当日期限のタスクをメール送信</span>
+<span class="kw">function</span> <span class="fn">sendMorningTaskReport</span>() {
+  <span class="kw">const</span> ss    = <span class="fn">SpreadsheetApp</span>.getActiveSpreadsheet();
+  <span class="kw">const</span> sheet = ss.getSheetByName(<span class="str">'タスク一覧'</span>);
+  <span class="kw">const</span> data  = sheet.getDataRange().getValues();
+
+  <span class="cm">// 今日の日付（時刻なし）</span>
+  <span class="kw">const</span> today     = <span class="kw">new</span> <span class="fn">Date</span>();
+  <span class="kw">const</span> todayStr  = <span class="fn">Utilities</span>.formatDate(
+    today, <span class="str">'Asia/Tokyo'</span>, <span class="str">'yyyy/MM/dd'</span>
+  );
+
+  <span class="cm">// 当日が期限のタスクを抽出（1行目はヘッダーのためスキップ）</span>
+  <span class="kw">const</span> todayTasks = data.slice(<span class="num">1</span>).filter(row => {
+    <span class="kw">const</span> deadline = <span class="fn">Utilities</span>.formatDate(
+      <span class="kw">new</span> <span class="fn">Date</span>(row[<span class="num">2</span>]), <span class="str">'Asia/Tokyo'</span>, <span class="str">'yyyy/MM/dd'</span>
+    );
+    <span class="kw">return</span> deadline === todayStr &amp;&amp; row[<span class="num">3</span>] !== <span class="str">'完了'</span>;
+  });
+
+  <span class="cm">// タスクがなければ送信しない</span>
+  <span class="kw">if</span> (todayTasks.length === <span class="num">0</span>) {
+    <span class="fn">Logger</span>.log(<span class="str">'本日のタスクなし'</span>);
+    <span class="kw">return</span>;
+  }
+
+  <span class="cm">// メール本文を組み立て</span>
+  <span class="kw">let</span> body = <span class="str">`おはようございます。\n本日（${todayStr}）のタスクです。\n\n`</span>;
+  todayTasks.<span class="fn">forEach</span>((row, i) => {
+    body += <span class="str">`【${i + <span class="num">1</span>}】${row[<span class="num">0</span>]}（担当：${row[<span class="num">1</span>]}）\n`</span>;
+  });
+  body += <span class="str">`\n本日もよろしくお願いします。`</span>;
+
+  <span class="kw">const</span> to      = <span class="str">'your-email@example.com'</span>;
+  <span class="kw">const</span> subject = <span class="str">`【本日のタスク】${todayStr} / ${todayTasks.length}件`</span>;
+  <span class="fn">GmailApp</span>.sendEmail(to, subject, body);
+  <span class="fn">Logger</span>.log(<span class="str">`送信完了: ${todayTasks.length}件`</span>);
+}
+
+<span class="cm">// ※ トリガー設定：「時間ベース」→「日タイマー」→「午前9時〜10時」</span></pre>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">ポイント解説</div>
+  <div class="point-list">
+    <div class="point-item"><div class="point-icon">⏰</div><div class="point-text"><strong>時間ベーストリガーで完全自動化</strong>　毎日決まった時刻にスクリプトを自動実行。手動操作は一切不要です。</div></div>
+    <div class="point-item"><div class="point-icon">🔍</div><div class="point-text"><strong>「完了」ステータスを除外</strong>　既に完了したタスクはフィルタリングして通知しないため、余計な情報が届きません。</div></div>
+    <div class="point-item"><div class="point-icon">📅</div><div class="point-text"><strong>タイムゾーン対応</strong>　Utilities.formatDate で Asia/Tokyo を指定することで、日付のズレを防いでいます。</div></div>
+  </div>
+</div>
+<footer>© 2025 Portfolio</footer>
+</body></html>

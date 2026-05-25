@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python | スクレイピング→CSV出力</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+JP:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f9f7;--card:#fff;--accent:#2d7a4f;--accent-light:#e8f5ee;--border:rgba(45,122,79,0.15);--border-light:#e5e7eb;--text:#111827;--text-mid:#374151;--text-muted:#6b7280;--code-bg:#0d1117;--code-text:#c9d1d9}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:300;color:var(--text);background:var(--bg);line-height:1.7}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 6vw;background:rgba(247,249,247,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-light)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--accent);text-decoration:none}
+.back-btn{font-size:0.8rem;color:var(--text-muted)}
+.hero{padding:120px 6vw 60px;max-width:900px;margin:0 auto}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);border:1px solid var(--border);padding:5px 14px;border-radius:999px;margin-bottom:1.5rem}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.hero-desc{font-size:0.95rem;color:var(--text-muted);max-width:600px;line-height:1.9;margin-bottom:2rem}
+.meta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:3rem}
+.meta-badge{font-size:0.72rem;font-weight:500;padding:5px 14px;border-radius:6px;background:var(--accent-light);border:1px solid var(--border);color:var(--accent)}
+.section{max-width:900px;margin:0 auto;padding:0 6vw 60px}
+.section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:1.2rem;color:var(--text);display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:4px;height:1.2em;background:var(--accent);border-radius:2px;flex-shrink:0}
+.flow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.flow-step{background:var(--card);border:1px solid var(--border-light);border-radius:12px;padding:1.2rem;text-align:center;position:relative}
+.flow-step::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--accent);font-weight:700;font-size:1rem;z-index:1}
+.flow-step:last-child::after{display:none}
+.flow-icon{font-size:1.8rem;margin-bottom:0.5rem}
+.flow-label{font-size:0.8rem;font-weight:500;color:var(--text-mid)}
+.flow-sub{font-size:0.72rem;color:var(--text-muted);margin-top:3px}
+.code-block{background:var(--code-bg);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-lang{font-size:0.72rem;letter-spacing:0.1em;color:#79c0ff;font-family:'JetBrains Mono',monospace}
+.code-file{font-size:0.72rem;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace}
+pre{padding:24px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.8;color:var(--code-text)}
+.kw{color:#ff7b72}.fn{color:#d2a8ff}.str{color:#a5d6ff}.cm{color:#8b949e}.num{color:#79c0ff}.imp{color:#ffa657}
+.point-list{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem}
+.point-item{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;background:var(--card);border:1px solid var(--border-light);border-radius:10px}
+.point-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.point-text{font-size:0.88rem;color:var(--text-mid);line-height:1.7}
+.point-text strong{color:var(--text);font-weight:500}
+footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border-light);color:var(--text-muted);font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">← Portfolio</a>
+  <span class="back-btn">Python | スクレイピング→CSV</span>
+</nav>
+<div class="hero">
+  <div class="hero-tag">Python</div>
+  <h1 class="hero-title">WebスクレイピングでデータをCSVに自動出力</h1>
+  <p class="hero-desc">指定したWebサイトから商品名・価格・URLを自動収集し、CSVファイルに整形して保存するPythonスクリプトです。定期実行との組み合わせで価格監視にも使えます。</p>
+  <div class="meta-row">
+    <span class="meta-badge">Python 3</span>
+    <span class="meta-badge">requests</span>
+    <span class="meta-badge">BeautifulSoup4</span>
+    <span class="meta-badge">pandas</span>
+    <span class="meta-badge">CSV出力</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">処理の流れ</div>
+  <div class="flow-grid">
+    <div class="flow-step"><div class="flow-icon">🌐</div><div class="flow-label">URLにアクセス</div><div class="flow-sub">requests で取得</div></div>
+    <div class="flow-step"><div class="flow-icon">🔍</div><div class="flow-label">HTML解析</div><div class="flow-sub">BeautifulSoup</div></div>
+    <div class="flow-step"><div class="flow-icon">📦</div><div class="flow-label">データ抽出</div><div class="flow-sub">CSSセレクタで取得</div></div>
+    <div class="flow-step"><div class="flow-icon">📄</div><div class="flow-label">CSV保存</div><div class="flow-sub">pandas で出力</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">スクリプト（Python）</div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python 3</span><span class="code-file">scraper.py</span></div>
+    <pre><span class="imp">import</span> requests
+<span class="imp">import</span> pandas <span class="imp">as</span> pd
+<span class="imp">from</span> bs4 <span class="imp">import</span> BeautifulSoup
+<span class="imp">from</span> datetime <span class="imp">import</span> datetime
+<span class="imp">import</span> time
+
+<span class="kw">def</span> <span class="fn">scrape_items</span>(url: str) -> list[dict]:
+    <span class="str">"""指定URLから商品情報を取得してリストで返す"""</span>
+    headers = {<span class="str">'User-Agent'</span>: <span class="str">'Mozilla/5.0'</span>}
+    res     = requests.<span class="fn">get</span>(url, headers=headers, timeout=<span class="num">10</span>)
+    res.raise_for_status()
+
+    soup  = BeautifulSoup(res.text, <span class="str">'html.parser'</span>)
+    items = []
+
+    <span class="cm"># 商品カードを全件取得（セレクタはサイトに合わせて変更）</span>
+    <span class="kw">for</span> card <span class="kw">in</span> soup.<span class="fn">select</span>(<span class="str">'.product-card'</span>):
+        name  = card.<span class="fn">select_one</span>(<span class="str">'.product-name'</span>)
+        price = card.<span class="fn">select_one</span>(<span class="str">'.product-price'</span>)
+        link  = card.<span class="fn">select_one</span>(<span class="str">'a'</span>)
+
+        <span class="kw">if not</span> (name <span class="kw">and</span> price):
+            <span class="kw">continue</span>
+
+        items.<span class="fn">append</span>({
+            <span class="str">'商品名'</span> : name.get_text(strip=<span class="kw">True</span>),
+            <span class="str">'価格'</span>   : price.get_text(strip=<span class="kw">True</span>),
+            <span class="str">'URL'</span>    : link[<span class="str">'href'</span>] <span class="kw">if</span> link <span class="kw">else</span> <span class="str">''</span>,
+            <span class="str">'取得日時'</span>: datetime.now().<span class="fn">strftime</span>(<span class="str">'%Y/%m/%d %H:%M'</span>)
+        })
+        time.<span class="fn">sleep</span>(<span class="num">0.5</span>)  <span class="cm"># サーバーへの負荷軽減</span>
+
+    <span class="kw">return</span> items
+
+<span class="kw">def</span> <span class="fn">save_to_csv</span>(items: list[dict], filename: str):
+    <span class="str">"""データをCSVに保存"""</span>
+    df = pd.<span class="fn">DataFrame</span>(items)
+    df.<span class="fn">to_csv</span>(filename, index=<span class="kw">False</span>, encoding=<span class="str">'utf-8-sig'</span>)
+    <span class="fn">print</span>(<span class="str">f"✅ {len(items)}件を {filename} に保存しました"</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    TARGET_URL = <span class="str">'https://example.com/products'</span>
+    OUTPUT_CSV = <span class="str">f'products_{datetime.now().strftime("%Y%m%d")}.csv'</span>
+
+    data = <span class="fn">scrape_items</span>(TARGET_URL)
+    <span class="fn">save_to_csv</span>(data, OUTPUT_CSV)</pre>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">ポイント解説</div>
+  <div class="point-list">
+    <div class="point-item"><div class="point-icon">🛡️</div><div class="point-text"><strong>サーバー負荷対策を実装</strong>　time.sleep(0.5) でリクエスト間隔を空け、対象サイトへの過剰アクセスを防いでいます。</div></div>
+    <div class="point-item"><div class="point-icon">📄</div><div class="point-text"><strong>utf-8-sig でExcel対応</strong>　encoding='utf-8-sig' を指定することで、Excelで開いても文字化けしないCSVを生成します。</div></div>
+    <div class="point-item"><div class="point-icon">📅</div><div class="point-text"><strong>日付付きファイル名</strong>　出力CSVに日付を付与することで、定期実行時も上書きせず履歴として蓄積できます。</div></div>
+  </div>
+</div>
+<footer>© 2025 Portfolio</footer>
+</body></html>

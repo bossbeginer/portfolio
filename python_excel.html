@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python | Excel集計レポート自動生成</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+JP:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f9f7;--card:#fff;--accent:#2d7a4f;--accent-light:#e8f5ee;--border:rgba(45,122,79,0.15);--border-light:#e5e7eb;--text:#111827;--text-mid:#374151;--text-muted:#6b7280;--code-bg:#0d1117;--code-text:#c9d1d9}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:300;color:var(--text);background:var(--bg);line-height:1.7}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 6vw;background:rgba(247,249,247,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-light)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--accent);text-decoration:none}
+.back-btn{font-size:0.8rem;color:var(--text-muted)}
+.hero{padding:120px 6vw 60px;max-width:900px;margin:0 auto}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);border:1px solid var(--border);padding:5px 14px;border-radius:999px;margin-bottom:1.5rem}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.hero-desc{font-size:0.95rem;color:var(--text-muted);max-width:600px;line-height:1.9;margin-bottom:2rem}
+.meta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:3rem}
+.meta-badge{font-size:0.72rem;font-weight:500;padding:5px 14px;border-radius:6px;background:var(--accent-light);border:1px solid var(--border);color:var(--accent)}
+.section{max-width:900px;margin:0 auto;padding:0 6vw 60px}
+.section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:1.2rem;color:var(--text);display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:4px;height:1.2em;background:var(--accent);border-radius:2px;flex-shrink:0}
+.flow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.flow-step{background:var(--card);border:1px solid var(--border-light);border-radius:12px;padding:1.2rem;text-align:center;position:relative}
+.flow-step::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--accent);font-weight:700;font-size:1rem;z-index:1}
+.flow-step:last-child::after{display:none}
+.flow-icon{font-size:1.8rem;margin-bottom:0.5rem}
+.flow-label{font-size:0.8rem;font-weight:500;color:var(--text-mid)}
+.flow-sub{font-size:0.72rem;color:var(--text-muted);margin-top:3px}
+.code-block{background:var(--code-bg);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-lang{font-size:0.72rem;letter-spacing:0.1em;color:#79c0ff;font-family:'JetBrains Mono',monospace}
+.code-file{font-size:0.72rem;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace}
+pre{padding:24px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.8;color:var(--code-text)}
+.kw{color:#ff7b72}.fn{color:#d2a8ff}.str{color:#a5d6ff}.cm{color:#8b949e}.num{color:#79c0ff}.imp{color:#ffa657}
+.point-list{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem}
+.point-item{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;background:var(--card);border:1px solid var(--border-light);border-radius:10px}
+.point-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.point-text{font-size:0.88rem;color:var(--text-mid);line-height:1.7}
+.point-text strong{color:var(--text);font-weight:500}
+footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border-light);color:var(--text-muted);font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">← Portfolio</a>
+  <span class="back-btn">Python | Excel集計レポート</span>
+</nav>
+<div class="hero">
+  <div class="hero-tag">Python</div>
+  <h1 class="hero-title">Excelデータを集計して<br>グラフ付きレポートを自動生成</h1>
+  <p class="hero-desc">売上データのExcelファイルを読み込み、月別・商品別に集計してグラフ付きのレポートExcelを自動生成するPythonスクリプトです。</p>
+  <div class="meta-row">
+    <span class="meta-badge">Python 3</span>
+    <span class="meta-badge">pandas</span>
+    <span class="meta-badge">openpyxl</span>
+    <span class="meta-badge">matplotlib</span>
+    <span class="meta-badge">Excel出力</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">処理の流れ</div>
+  <div class="flow-grid">
+    <div class="flow-step"><div class="flow-icon">📊</div><div class="flow-label">Excel読み込み</div><div class="flow-sub">pandas で取得</div></div>
+    <div class="flow-step"><div class="flow-icon">🔢</div><div class="flow-label">集計処理</div><div class="flow-sub">月別・商品別</div></div>
+    <div class="flow-step"><div class="flow-icon">📈</div><div class="flow-label">グラフ生成</div><div class="flow-sub">matplotlib</div></div>
+    <div class="flow-step"><div class="flow-icon">💾</div><div class="flow-label">Excel出力</div><div class="flow-sub">openpyxl で保存</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">スクリプト（Python）</div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python 3</span><span class="code-file">excel_report.py</span></div>
+    <pre><span class="imp">import</span> pandas <span class="imp">as</span> pd
+<span class="imp">import</span> matplotlib.pyplot <span class="imp">as</span> plt
+<span class="imp">import</span> matplotlib
+<span class="imp">from</span> openpyxl <span class="imp">import</span> load_workbook
+<span class="imp">from</span> openpyxl.drawing.image <span class="imp">import</span> Image
+<span class="imp">from</span> datetime <span class="imp">import</span> datetime
+<span class="imp">import</span> io
+
+matplotlib.<span class="fn">use</span>(<span class="str">'Agg'</span>)  <span class="cm"># 画面表示なしで描画</span>
+
+<span class="kw">def</span> <span class="fn">generate_report</span>(input_file: str, output_file: str):
+    <span class="cm"># --- データ読み込み ---</span>
+    df = pd.<span class="fn">read_excel</span>(input_file)
+    df[<span class="str">'日付'</span>] = pd.<span class="fn">to_datetime</span>(df[<span class="str">'日付'</span>])
+    df[<span class="str">'月'</span>]   = df[<span class="str">'日付'</span>].dt.<span class="fn">strftime</span>(<span class="str">'%Y-%m'</span>)
+
+    <span class="cm"># --- 月別売上集計 ---</span>
+    monthly = df.<span class="fn">groupby</span>(<span class="str">'月'</span>)[<span class="str">'売上金額'</span>].<span class="fn">sum</span>().<span class="fn">reset_index</span>()
+    monthly.columns = [<span class="str">'月'</span>, <span class="str">'合計売上'</span>]
+
+    <span class="cm"># --- 商品別売上集計 ---</span>
+    by_product = df.<span class="fn">groupby</span>(<span class="str">'商品名'</span>)[<span class="str">'売上金額'</span>].<span class="fn">sum</span>()\
+                   .<span class="fn">sort_values</span>(ascending=<span class="kw">False</span>).<span class="fn">reset_index</span>()
+
+    <span class="cm"># --- グラフ生成（月別棒グラフ）---</span>
+    fig, ax = plt.<span class="fn">subplots</span>(figsize=(<span class="num">10</span>, <span class="num">4</span>))
+    ax.<span class="fn">bar</span>(monthly[<span class="str">'月'</span>], monthly[<span class="str">'合計売上'</span>], color=<span class="str">'#2d7a4f'</span>)
+    ax.<span class="fn">set_title</span>(<span class="str">'月別売上推移'</span>, fontsize=<span class="num">14</span>)
+    ax.<span class="fn">set_ylabel</span>(<span class="str">'売上金額（円）'</span>)
+    ax.<span class="fn">tick_params</span>(axis=<span class="str">'x'</span>, rotation=<span class="num">45</span>)
+    plt.<span class="fn">tight_layout</span>()
+
+    img_buf = io.<span class="fn">BytesIO</span>()
+    fig.<span class="fn">savefig</span>(img_buf, format=<span class="str">'png'</span>, dpi=<span class="num">150</span>)
+    img_buf.seek(<span class="num">0</span>)
+    plt.<span class="fn">close</span>()
+
+    <span class="cm"># --- Excelに集計表＋グラフを書き込み ---</span>
+    <span class="kw">with</span> pd.<span class="fn">ExcelWriter</span>(output_file, engine=<span class="str">'openpyxl'</span>) <span class="kw">as</span> writer:
+        monthly.<span class="fn">to_excel</span>(writer, sheet_name=<span class="str">'月別集計'</span>, index=<span class="kw">False</span>)
+        by_product.<span class="fn">to_excel</span>(writer, sheet_name=<span class="str">'商品別集計'</span>, index=<span class="kw">False</span>)
+
+    <span class="cm"># グラフ画像をシートに貼り付け</span>
+    wb   = <span class="fn">load_workbook</span>(output_file)
+    ws   = wb[<span class="str">'月別集計'</span>]
+    img  = <span class="fn">Image</span>(img_buf)
+    img.anchor = <span class="str">'D2'</span>
+    ws.<span class="fn">add_image</span>(img)
+    wb.<span class="fn">save</span>(output_file)
+
+    <span class="fn">print</span>(<span class="str">f"✅ レポートを {output_file} に出力しました"</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    today = datetime.now().<span class="fn">strftime</span>(<span class="str">'%Y%m%d'</span>)
+    <span class="fn">generate_report</span>(<span class="str">'sales_data.xlsx'</span>, <span class="str">f'report_{today}.xlsx'</span>)</pre>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">ポイント解説</div>
+  <div class="point-list">
+    <div class="point-item"><div class="point-icon">📊</div><div class="point-text"><strong>pandas で高速集計</strong>　groupby を使うことで、数千行のデータも一瞬で月別・商品別に集計できます。</div></div>
+    <div class="point-item"><div class="point-icon">📈</div><div class="point-text"><strong>グラフをExcelに直接埋め込み</strong>　matplotlib で生成した棒グラフを BytesIO 経由でExcelシートに貼り付け。ファイル一つで完結するレポートを生成します。</div></div>
+    <div class="point-item"><div class="point-icon">📅</div><div class="point-text"><strong>日付付き出力ファイル名</strong>　毎月実行しても上書きされず、report_20250601.xlsx のように月次レポートを蓄積できます。</div></div>
+  </div>
+</div>
+<footer>© 2025 Portfolio</footer>
+</body></html>

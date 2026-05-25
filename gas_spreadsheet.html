@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAS | スプレッドシート自動通知</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+JP:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f9f7;--bg2:#eef3ee;--card:#fff;--accent:#2d7a4f;--accent2:#3da06a;--accent-light:#e8f5ee;--border:rgba(45,122,79,0.15);--border-light:#e5e7eb;--text:#111827;--text-mid:#374151;--text-muted:#6b7280;--code-bg:#0f1b12;--code-text:#a8d5b5}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:300;color:var(--text);background:var(--bg);line-height:1.7}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 6vw;background:rgba(247,249,247,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-light)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--accent);text-decoration:none}
+.back-btn{font-size:0.8rem;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color 0.2s}
+.back-btn:hover{color:var(--accent)}
+.hero{padding:120px 6vw 60px;max-width:900px;margin:0 auto}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);border:1px solid var(--border);padding:5px 14px;border-radius:999px;margin-bottom:1.5rem}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.hero-desc{font-size:0.95rem;color:var(--text-muted);max-width:600px;line-height:1.9;margin-bottom:2rem}
+.meta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:3rem}
+.meta-badge{font-size:0.72rem;font-weight:500;padding:5px 14px;border-radius:6px;background:var(--accent-light);border:1px solid var(--border);color:var(--accent)}
+.section{max-width:900px;margin:0 auto;padding:0 6vw 60px}
+.section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:1.2rem;color:var(--text);display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:4px;height:1.2em;background:var(--accent);border-radius:2px;flex-shrink:0}
+.flow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.flow-step{background:var(--card);border:1px solid var(--border-light);border-radius:12px;padding:1.2rem;text-align:center;position:relative}
+.flow-step::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--accent);font-weight:700;font-size:1rem;z-index:1}
+.flow-step:last-child::after{display:none}
+.flow-icon{font-size:1.8rem;margin-bottom:0.5rem}
+.flow-label{font-size:0.8rem;font-weight:500;color:var(--text-mid)}
+.flow-sub{font-size:0.72rem;color:var(--text-muted);margin-top:3px}
+.code-block{background:var(--code-bg);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-lang{font-size:0.72rem;letter-spacing:0.1em;color:#6ee7b7;font-family:'JetBrains Mono',monospace}
+.code-file{font-size:0.72rem;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace}
+pre{padding:24px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.8;color:var(--code-text)}
+.kw{color:#86efac}.fn{color:#6ee7b7}.str{color:#fcd34d}.cm{color:#4b6c55}.num{color:#93c5fd}
+.point-list{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem}
+.point-item{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;background:var(--card);border:1px solid var(--border-light);border-radius:10px}
+.point-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.point-text{font-size:0.88rem;color:var(--text-mid);line-height:1.7}
+.point-text strong{color:var(--text);font-weight:500}
+footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border-light);color:var(--text-muted);font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">← Portfolio</a>
+  <span class="back-btn">GAS | スプレッドシート自動通知</span>
+</nav>
+<div class="hero">
+  <div class="hero-tag">Google Apps Script</div>
+  <h1 class="hero-title">スプレッドシート編集を<br>検知してメール自動通知</h1>
+  <p class="hero-desc">Googleスプレッドシートに新しい行が追加されたとき、担当者へ自動でメール通知を送るGASスクリプトです。手作業での連絡漏れをゼロにします。</p>
+  <div class="meta-row">
+    <span class="meta-badge">Google Apps Script</span>
+    <span class="meta-badge">Gmail API</span>
+    <span class="meta-badge">Spreadsheet API</span>
+    <span class="meta-badge">トリガー自動実行</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">処理の流れ</div>
+  <div class="flow-grid">
+    <div class="flow-step"><div class="flow-icon">📝</div><div class="flow-label">行が追加される</div><div class="flow-sub">スプレッドシート</div></div>
+    <div class="flow-step"><div class="flow-icon">⚡</div><div class="flow-label">トリガー発火</div><div class="flow-sub">onChange イベント</div></div>
+    <div class="flow-step"><div class="flow-icon">🔍</div><div class="flow-label">データ取得</div><div class="flow-sub">最終行を読み込み</div></div>
+    <div class="flow-step"><div class="flow-icon">📧</div><div class="flow-label">メール送信</div><div class="flow-sub">Gmail API</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">スクリプト（GAS）</div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Google Apps Script</span><span class="code-file">notify.gs</span></div>
+    <pre><span class="cm">// スプレッドシートに行が追加されたとき自動でメール通知</span>
+<span class="kw">function</span> <span class="fn">onSheetEdit</span>(e) {
+  <span class="kw">const</span> sheet = e.source.getActiveSheet();
+  <span class="kw">const</span> range = e.range;
+
+  <span class="cm">// 1行目（ヘッダー）の変更は無視</span>
+  <span class="kw">if</span> (range.getRow() &lt;= <span class="num">1</span>) <span class="kw">return</span>;
+
+  <span class="cm">// 編集されたセルのデータを取得</span>
+  <span class="kw">const</span> row      = range.getRow();
+  <span class="kw">const</span> name     = sheet.getRange(row, <span class="num">1</span>).getValue();
+  <span class="kw">const</span> email    = sheet.getRange(row, <span class="num">2</span>).getValue();
+  <span class="kw">const</span> content  = sheet.getRange(row, <span class="num">3</span>).getValue();
+  <span class="kw">const</span> date     = <span class="kw">new</span> <span class="fn">Date</span>().toLocaleString(<span class="str">'ja-JP'</span>);
+
+  <span class="cm">// メール本文の組み立て</span>
+  <span class="kw">const</span> subject = <span class="str">`【自動通知】新規入力がありました（${name}）`</span>;
+  <span class="kw">const</span> body    = <span class="str">`以下の内容が入力されました。\n\n`</span>
+               + <span class="str">`■ 名前：${name}\n`</span>
+               + <span class="str">`■ メール：${email}\n`</span>
+               + <span class="str">`■ 内容：${content}\n`</span>
+               + <span class="str">`■ 入力日時：${date}\n`</span>;
+
+  <span class="cm">// 通知先メールアドレス（複数可）</span>
+  <span class="kw">const</span> to = <span class="str">'your-email@example.com'</span>;
+
+  <span class="fn">GmailApp</span>.sendEmail(to, subject, body);
+  <span class="fn">Logger</span>.log(<span class="str">`通知送信完了: ${name}`</span>);
+}
+
+<span class="cm">// ※ トリガー設定：「スプレッドシートの変更時」に onSheetEdit を実行</span></pre>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">ポイント解説</div>
+  <div class="point-list">
+    <div class="point-item"><div class="point-icon">⚡</div><div class="point-text"><strong>トリガー設定で完全自動化</strong>　GASの「編集時」トリガーを設定するだけで、スプレッドシートへの入力を検知して自動実行されます。</div></div>
+    <div class="point-item"><div class="point-icon">📧</div><div class="point-text"><strong>GmailApp.sendEmail で簡単送信</strong>　認証不要でGmailからメール送信できます。複数宛先への同時送信も可能です。</div></div>
+    <div class="point-item"><div class="point-icon">🔧</div><div class="point-text"><strong>カスタマイズ性が高い</strong>　列の構成・通知先・本文フォーマットは自由に変更可能。Slackへの通知切り替えも容易です。</div></div>
+  </div>
+</div>
+<footer>© 2025 Portfolio</footer>
+</body></html>

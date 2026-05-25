@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python | ファイル自動整理</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+JP:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f7f9f7;--card:#fff;--accent:#2d7a4f;--accent-light:#e8f5ee;--border:rgba(45,122,79,0.15);--border-light:#e5e7eb;--text:#111827;--text-mid:#374151;--text-muted:#6b7280;--code-bg:#0d1117;--code-text:#c9d1d9}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;font-weight:300;color:var(--text);background:var(--bg);line-height:1.7}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 6vw;background:rgba(247,249,247,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-light)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--accent);text-decoration:none}
+.back-btn{font-size:0.8rem;color:var(--text-muted)}
+.hero{padding:120px 6vw 60px;max-width:900px;margin:0 auto}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);border:1px solid var(--border);padding:5px 14px;border-radius:999px;margin-bottom:1.5rem}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.hero-desc{font-size:0.95rem;color:var(--text-muted);max-width:600px;line-height:1.9;margin-bottom:2rem}
+.meta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:3rem}
+.meta-badge{font-size:0.72rem;font-weight:500;padding:5px 14px;border-radius:6px;background:var(--accent-light);border:1px solid var(--border);color:var(--accent)}
+.section{max-width:900px;margin:0 auto;padding:0 6vw 60px}
+.section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:1.2rem;color:var(--text);display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:4px;height:1.2em;background:var(--accent);border-radius:2px;flex-shrink:0}
+.flow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.flow-step{background:var(--card);border:1px solid var(--border-light);border-radius:12px;padding:1.2rem;text-align:center;position:relative}
+.flow-step::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--accent);font-weight:700;font-size:1rem;z-index:1}
+.flow-step:last-child::after{display:none}
+.flow-icon{font-size:1.8rem;margin-bottom:0.5rem}
+.flow-label{font-size:0.8rem;font-weight:500;color:var(--text-mid)}
+.flow-sub{font-size:0.72rem;color:var(--text-muted);margin-top:3px}
+.code-block{background:var(--code-bg);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.code-lang{font-size:0.72rem;letter-spacing:0.1em;color:#79c0ff;font-family:'JetBrains Mono',monospace}
+.code-file{font-size:0.72rem;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace}
+pre{padding:24px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.8;color:var(--code-text)}
+.kw{color:#ff7b72}.fn{color:#d2a8ff}.str{color:#a5d6ff}.cm{color:#8b949e}.num{color:#79c0ff}.imp{color:#ffa657}
+.point-list{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem}
+.point-item{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;background:var(--card);border:1px solid var(--border-light);border-radius:10px}
+.point-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.point-text{font-size:0.88rem;color:var(--text-mid);line-height:1.7}
+.point-text strong{color:var(--text);font-weight:500}
+footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border-light);color:var(--text-muted);font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">← Portfolio</a>
+  <span class="back-btn">Python | ファイル自動整理</span>
+</nav>
+<div class="hero">
+  <div class="hero-tag">Python</div>
+  <h1 class="hero-title">フォルダ内のファイルを<br>拡張子別に自動整理・リネーム</h1>
+  <p class="hero-desc">散らかったダウンロードフォルダなどを、拡張子ごとのサブフォルダに自動で振り分けるPythonスクリプトです。ファイル名への日付付与にも対応。</p>
+  <div class="meta-row">
+    <span class="meta-badge">Python 3</span>
+    <span class="meta-badge">pathlib</span>
+    <span class="meta-badge">shutil</span>
+    <span class="meta-badge">ファイル操作</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">処理の流れ</div>
+  <div class="flow-grid">
+    <div class="flow-step"><div class="flow-icon">📁</div><div class="flow-label">フォルダ走査</div><div class="flow-sub">全ファイルを取得</div></div>
+    <div class="flow-step"><div class="flow-icon">🔍</div><div class="flow-label">拡張子判定</div><div class="flow-sub">種別マッピング</div></div>
+    <div class="flow-step"><div class="flow-icon">📂</div><div class="flow-label">フォルダ作成</div><div class="flow-sub">なければ自動生成</div></div>
+    <div class="flow-step"><div class="flow-icon">🚚</div><div class="flow-label">ファイル移動</div><div class="flow-sub">shutil.move</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">スクリプト（Python）</div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python 3</span><span class="code-file">file_organizer.py</span></div>
+    <pre><span class="imp">from</span> pathlib <span class="imp">import</span> Path
+<span class="imp">import</span> shutil
+<span class="imp">from</span> datetime <span class="imp">import</span> datetime
+
+<span class="cm"># 拡張子→フォルダ名のマッピング</span>
+EXT_MAP = {
+    <span class="str">'画像'</span>    : [<span class="str">'.jpg'</span>, <span class="str">'.jpeg'</span>, <span class="str">'.png'</span>, <span class="str">'.gif'</span>, <span class="str">'.webp'</span>],
+    <span class="str">'動画'</span>    : [<span class="str">'.mp4'</span>, <span class="str">'.mov'</span>, <span class="str">'.avi'</span>, <span class="str">'.mkv'</span>],
+    <span class="str">'文書'</span>    : [<span class="str">'.pdf'</span>, <span class="str">'.docx'</span>, <span class="str">'.xlsx'</span>, <span class="str">'.pptx'</span>],
+    <span class="str">'テキスト'</span>: [<span class="str">'.txt'</span>, <span class="str">'.md'</span>, <span class="str">'.csv'</span>],
+    <span class="str">'コード'</span>  : [<span class="str">'.py'</span>, <span class="str">'.js'</span>, <span class="str">'.html'</span>, <span class="str">'.css'</span>],
+    <span class="str">'圧縮'</span>    : [<span class="str">'.zip'</span>, <span class="str">'.tar'</span>, <span class="str">'.gz'</span>],
+}
+
+<span class="kw">def</span> <span class="fn">get_folder_name</span>(ext: str) -> str:
+    <span class="str">"""拡張子からフォルダ名を返す（未定義は 'その他'）"""</span>
+    <span class="kw">for</span> folder, exts <span class="kw">in</span> EXT_MAP.items():
+        <span class="kw">if</span> ext.lower() <span class="kw">in</span> exts:
+            <span class="kw">return</span> folder
+    <span class="kw">return</span> <span class="str">'その他'</span>
+
+<span class="kw">def</span> <span class="fn">organize</span>(target_dir: str, add_date: bool = <span class="kw">True</span>):
+    <span class="str">"""フォルダ内ファイルを拡張子別に整理"""</span>
+    base  = Path(target_dir)
+    moved = <span class="num">0</span>
+
+    <span class="kw">for</span> file <span class="kw">in</span> base.iterdir():
+        <span class="kw">if not</span> file.is_file():
+            <span class="kw">continue</span>
+
+        folder_name = <span class="fn">get_folder_name</span>(file.suffix)
+        dest_dir    = base / folder_name
+        dest_dir.<span class="fn">mkdir</span>(exist_ok=<span class="kw">True</span>)
+
+        <span class="cm"># 日付プレフィックスを付与（オプション）</span>
+        <span class="kw">if</span> add_date:
+            date_str = datetime.now().<span class="fn">strftime</span>(<span class="str">'%Y%m%d_'</span>)
+            new_name = dest_dir / (date_str + file.name)
+        <span class="kw">else</span>:
+            new_name = dest_dir / file.name
+
+        <span class="cm"># 同名ファイルが存在する場合は連番を付与</span>
+        counter = <span class="num">1</span>
+        <span class="kw">while</span> new_name.exists():
+            stem     = new_name.stem + <span class="str">f'_{counter}'</span>
+            new_name = dest_dir / (stem + file.suffix)
+            counter += <span class="num">1</span>
+
+        shutil.<span class="fn">move</span>(<span class="fn">str</span>(file), <span class="fn">str</span>(new_name))
+        <span class="fn">print</span>(<span class="str">f"移動: {file.name} → {folder_name}/"</span>)
+        moved += <span class="num">1</span>
+
+    <span class="fn">print</span>(<span class="str">f"\n✅ 完了: {moved}件のファイルを整理しました"</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    <span class="fn">organize</span>(<span class="str">'/Users/yourname/Downloads'</span>, add_date=<span class="kw">True</span>)</pre>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">ポイント解説</div>
+  <div class="point-list">
+    <div class="point-item"><div class="point-icon">📂</div><div class="point-text"><strong>フォルダが存在しない場合は自動生成</strong>　mkdir(exist_ok=True) で、フォルダがなくても自動作成するため事前準備が不要です。</div></div>
+    <div class="point-item"><div class="point-icon">🔢</div><div class="point-text"><strong>同名ファイルの上書き防止</strong>　既に同名ファイルが存在する場合は自動で連番を付与し、データの消失を防ぎます。</div></div>
+    <div class="point-item"><div class="point-icon">🗂️</div><div class="point-text"><strong>EXT_MAPで柔軟にカスタマイズ</strong>　対応する拡張子とフォルダ名の対応表を変更するだけで、任意の整理ルールに対応できます。</div></div>
+  </div>
+</div>
+<footer>© 2025 Portfolio</footer>
+</body></html>
